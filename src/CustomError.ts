@@ -4,6 +4,7 @@ export type ErrorData = AlgaNews.components['schemas']['Problem'];
 export type ErrorType = 'BusinessError'
  | 'ForbiddenError' 
  | 'GenericError' 
+ | 'IncomprehensibleMessageError' 
  | 'InvalidDataError' 
  | 'InvalidParameter' 
  | 'ResourceNotFoundError' 

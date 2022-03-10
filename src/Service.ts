@@ -1,4 +1,6 @@
 import axios, { AxiosResponse } from "axios"
+import handleAxiosResponseError from "./utils/handleAxiosResponseError";
+import handleAxiosResponseSuccess from "./utils/handleAxiosResponseSuccess";
  
 // cria uma instancia do Axios
 const Http = axios.create()
@@ -21,4 +23,9 @@ function getData<T>(res: AxiosResponse<T>) {
 // Configura o BaseURL alterando a propriedade protegida criada acima
 Http.defaults.baseURL = 'Http://localhost:8080'
 
-export default Service
+// Intercepta response do axios
+Http.interceptors.response.use(
+    handleAxiosResponseSuccess,
+    handleAxiosResponseError
+);
+  
