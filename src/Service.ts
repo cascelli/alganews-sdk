@@ -18,7 +18,7 @@ class Service {
     onFulfilled: (
       request: AxiosRequestConfig
     ) => AxiosRequestConfig | Promise<AxiosRequestConfig>, // define AxiosRequestConfig como sincrono ou assincrono
-    onRejected: (error: any) => any
+    onRejected?: (error: any) => any
   ) {
     Http.interceptors.request.use(onFulfilled, onRejected);
   }
