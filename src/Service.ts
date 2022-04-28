@@ -22,6 +22,16 @@ class Service {
   ) {
     Http.interceptors.request.use(onFulfilled, onRejected);
   }
+
+  // Cria um interceptador publico de respostas para uso com API blindada (segurança - Cap 17.10)
+  public static setResponseInterceptors(
+    onFulfilled: (
+      response: AxiosResponse
+    ) => AxiosResponse | Promise<AxiosResponse>, // define AxiosResponse como sincrono ou assincrono
+    onRejected?: (error: any) => any
+  ) {
+    Http.interceptors.response.use(onFulfilled, onRejected);
+  }
 }
 
 function getData<T>(res: AxiosResponse<T>) {
