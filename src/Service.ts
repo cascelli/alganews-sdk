@@ -13,6 +13,10 @@ class Service {
 
   protected static getData = getData; // Obtem apenas os dados da requisicao para facilitar
 
+  public static setBaseUrl(baseURL: string) {
+    this.Http.defaults.baseURL = baseURL;
+  }
+
   // Cria um interceptador publico de requisições para uso com API blindada (segurança - Cap 17.10)
   public static setRequestInterceptors(
     onFulfilled: (
