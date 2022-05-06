@@ -1,5 +1,5 @@
 import { Post } from "../@types";
-import Service from "../Service";
+import { Service } from "../Service";
 import generateQueryString from "../utils/generateQueryString";
 
 class PostService extends Service {

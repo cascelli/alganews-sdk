@@ -1,65 +1,53 @@
-import Service from "../Service";
 import { File } from "../@types";
-import { v4 as uuid } from 'uuid'; // Importa a versao 4 do modulo uuid e renomeia para uuid para manter a compatibilidade com o modulo uuidv4 anterior
-
+import { v4 as uuid } from "uuid"; // Importa a versao 4 do modulo uuid e renomeia para uuid para manter a compatibilidade com o modulo uuidv4 anterior
+import { Service } from "../Service";
 
 class FileService extends Service {
+  private static getSignedUrl(fileInfo: File.UploadRequestInput) {
+    return this.Http.post<File.UploadRequest>("/upload-requests", fileInfo)
+      .then(this.getData)
+      .then((res) => res.uploadSignedUrl);
+  }
 
-    private static getSignedUrl(fileInfo: File.UploadRequestInput) {
+  private static uploadFileToSignedUrl(signedUrl: string, file: File) {
+    return (
+      this.Http
 
-        return this.Http
-            .post<File.UploadRequest>('/upload-requests', fileInfo)
-            .then(this.getData)
-            .then(res => res.uploadSignedUrl)
+        // Implementacao de envio de arquivo parao Google Cloud Platform
+        .put<{}>(signedUrl, file, {
+          headers: { "Content-Type": file.type },
+        })
+        .then(this.getData)
+    );
+  }
 
-    }
+  private static getFileExtension(fileName: string) {
+    // Obtem a extensao do arquivo partindo o nome do arquivo pelo separador '.' atraves dos metodos split e slice
+    // Ex : arquivo.fotp.png => slit => ['arquivo', 'foto'. 'png'] => slice(-1) => 'png'
+    // Usando desestruturacao para obter o nome do arquivo [extension]
+    const [extension] = fileName.split(".").slice(-1); // -1 correponde ao ultimo elemento do array obtido com split
 
-    private static uploadFileToSignedUrl(signedUrl: string, file: File) {
+    return extension;
+  }
 
-        return this.Http
+  private static generateFileName(extension: string) {
+    return `${uuid()}.${extension}`;
+  }
 
-            // Implementacao de envio de arquivo parao Google Cloud Platform
-            .put<{}>(signedUrl, file, {
-                headers: {'Content-Type': file.type }
-            })
-            .then(this.getData)
+  static async upload(file: File) {
+    const extension = this.getFileExtension(file.name);
 
-    }
+    const fileName = this.generateFileName(extension);
 
-    private static getFileExtension(fileName: string) {
-        
-        // Obtem a extensao do arquivo partindo o nome do arquivo pelo separador '.' atraves dos metodos split e slice
-        // Ex : arquivo.fotp.png => slit => ['arquivo', 'foto'. 'png'] => slice(-1) => 'png'
-        // Usando desestruturacao para obter o nome do arquivo [extension]
-        const [extension] = fileName.split('.').slice(-1) // -1 correponde ao ultimo elemento do array obtido com split
+    const signedUrl = await FileService.getSignedUrl({
+      fileName,
+      contentLength: file.size,
+    });
 
-        return extension
-    } 
+    await FileService.uploadFileToSignedUrl(signedUrl, file);
 
-    private static generateFileName(extension: string) {
-
-        return `${uuid()}.${extension}`
-    }
-
-
-    static async upload(file: File) {
-
-        const extension = this.getFileExtension(file.name)
-
-        const fileName = this.generateFileName(extension)
-
-        const signedUrl = await FileService
-            .getSignedUrl({ fileName, contentLength: file.size })
-
-        await FileService
-          .uploadFileToSignedUrl(signedUrl, file)
-
-        return signedUrl.split('?')[0]  
-
-    }
-
-
+    return signedUrl.split("?")[0];
+  }
 }
 
-
-export default FileService
+export default FileService;

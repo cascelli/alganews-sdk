@@ -6,7 +6,8 @@ import handleAxiosResponseSuccess from "./utils/handleAxiosResponseSuccess";
 const Http = axios.create();
 
 // Clase basica para uso em serviços
-class Service {
+//class Service { // Inserido export para evitar erro de importacao nos arquivos *.service.ts desta pasta
+export class Service {
   // protected so pod eser acessada por ela mesma ou pelos herdeiros dessa classe
   // Isso forçará outras classes a estenderem dela para poder usar os serviços criados
   protected static Http = Http; // a propriedade protected Http receberá o valor da instancia de Http do Axios
